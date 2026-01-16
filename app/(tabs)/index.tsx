@@ -10,6 +10,7 @@ import { StatusIndicator } from "@/components/status-indicator";
 import { useColors } from "@/hooks/use-colors";
 import { useLanguage } from "@/hooks/use-language";
 import { useTheme } from "@/hooks/use-theme";
+import { useSound } from "@/hooks/use-sound";
 
 interface Command {
   id: string;
@@ -25,13 +26,11 @@ export default function TerminalScreen() {
   const colors = useColors();
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { playSound } = useSound();
   const [username, setUsername] = useState("root");
   const [userEmail, setUserEmail] = useState("");
-  const [consoleLines, setConsoleLines] = useState<string[]>([
-    t.terminal.systemInitialized,
-    t.terminal.welcome,
-    t.terminal.typeCommand,
-  ]);
+  const [consoleLines, setConsoleLines] = useState<string[]>([]);
+  const MAX_CONSOLE_LINES = 8;
   const [commands, setCommands] = useState<Command[]>([
     {
       id: "scan",
@@ -153,25 +152,33 @@ export default function TerminalScreen() {
     const command = commands.find((cmd) => cmd.id === commandId);
     if (!command || command.status === "running") return;
 
+    playSound("click");
+
     setCommands((prev) =>
       prev.map((cmd) =>
         cmd.id === commandId ? { ...cmd, status: "running" } : cmd
       )
     );
 
-    setConsoleLines((prev) => [...prev, `${t.terminal.executing} ${command.title}...`]);
+    setConsoleLines((prev) => {
+      const updated = [...prev, `${t.terminal.executing} ${command.title}...`];
+      return updated.slice(-MAX_CONSOLE_LINES);
+    });
 
     let lineIndex = 0;
     const interval = setInterval(() => {
       if (lineIndex < command.output.length) {
         const line = command.output[lineIndex];
-        // Garantir que line é uma string válida antes de adicionar
-        if (typeof line === 'string' && line.length > 0) {
-          setConsoleLines((prev) => [...prev, line]);
+        if (typeof line === "string" && line.length > 0) {
+          setConsoleLines((prev) => {
+            const updated = [...prev, line];
+            return updated.slice(-MAX_CONSOLE_LINES);
+          });
         }
         lineIndex++;
       } else {
         clearInterval(interval);
+        playSound("success");
         setCommands((prev) =>
           prev.map((cmd) =>
             cmd.id === commandId ? { ...cmd, status: "complete" } : cmd
@@ -181,17 +188,46 @@ export default function TerminalScreen() {
     }, 400);
   };
 
+  const handleCommandPress = (commandId: string) => {
+    playSound("click");
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    
+    // Navegar para tela de detalhes
+    switch (commandId) {
+      case "scan":
+        router.push("/command-details/scan");
+        break;
+      case "decrypt":
+        router.push("/command-details/decrypt");
+        break;
+      case "firewall":
+        router.push("/command-details/firewall");
+        break;
+      case "database":
+        router.push("/command-details/database");
+        break;
+      case "trace":
+        router.push("/command-details/trace");
+        break;
+      case "sysinfo":
+        router.push("/command-details/sysinfo");
+        break;
+    }
+  };
+
   return (
     <ScreenContainer className="bg-black">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-4">
           {/* Header */}
           <View className="flex-row items-center justify-between mb-6 pb-4" style={{ borderBottomColor: `${theme.primary}50`, borderBottomWidth: 1 }}>
-            <View>
+            <View className="flex-1">
               <Text
                 className="text-xl font-bold mb-1"
                 style={{
-                  fontFamily: 'monospace',
+                  fontFamily: "monospace",
                   color: theme.primary,
                   textShadowColor: theme.primary,
                   textShadowRadius: 10,
@@ -199,17 +235,40 @@ export default function TerminalScreen() {
               >
                 {username}@hacker:~$
               </Text>
-              <Text className="text-xs font-mono mb-2" style={{ fontFamily: 'monospace', color: theme.muted }}>
+              <Text className="text-xs font-mono mb-2" style={{ fontFamily: "monospace", color: theme.muted }}>
                 {userEmail}
               </Text>
               <StatusIndicator status="online" />
             </View>
             <Pressable
+              onPress={() => {
+                playSound("click");
+                router.push("/settings");
+              }}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+                borderColor: theme.primary + "80",
+                backgroundColor: theme.primary + "20",
+                borderWidth: 1,
+                borderRadius: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                marginRight: 8,
+              })}
+            >
+              <Text
+                className="text-sm font-mono font-bold"
+                style={{ fontFamily: "monospace", color: theme.primary }}
+              >
+                ⚙️
+              </Text>
+            </Pressable>
+            <Pressable
               onPress={handleLogout}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.7 : 1,
-                borderColor: theme.error + '80',
-                backgroundColor: theme.error + '20',
+                borderColor: theme.error + "80",
+                backgroundColor: theme.error + "20",
                 borderWidth: 1,
                 borderRadius: 8,
                 paddingHorizontal: 16,
@@ -218,7 +277,7 @@ export default function TerminalScreen() {
             >
               <Text
                 className="text-sm font-mono font-bold"
-                style={{ fontFamily: 'monospace', color: theme.error }}
+                style={{ fontFamily: "monospace", color: theme.error }}
               >
                 {t.terminal.logout}
               </Text>
@@ -230,7 +289,7 @@ export default function TerminalScreen() {
             <Text
               className="text-lg font-bold font-mono mb-4"
               style={{
-                fontFamily: 'monospace',
+                fontFamily: "monospace",
                 color: theme.primary,
                 textShadowColor: theme.primary,
                 textShadowRadius: 8,
@@ -245,7 +304,7 @@ export default function TerminalScreen() {
                 title={command.title}
                 description={command.description}
                 status={command.status}
-                onPress={() => executeCommand(command.id)}
+                onPress={() => handleCommandPress(command.id)}
               />
             ))}
           </View>
@@ -255,7 +314,7 @@ export default function TerminalScreen() {
             <Text
               className="text-lg font-bold font-mono mb-4"
               style={{
-                fontFamily: 'monospace',
+                fontFamily: "monospace",
                 color: theme.primary,
                 textShadowColor: theme.primary,
                 textShadowRadius: 8,

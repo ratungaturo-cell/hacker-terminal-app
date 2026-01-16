@@ -89,3 +89,32 @@
 - [x] Traduzir tela principal do terminal
 - [x] Traduzir nomes dos comandos
 - [x] Traduzir mensagens de erro e sucesso
+
+
+## Efeitos de Som
+- [x] Implementar sistema de efeitos de som
+- [x] Adicionar som de digitação
+- [x] Adicionar som de sucesso
+- [x] Adicionar som de erro
+- [x] Criar hook useSound para gerenciar áudio
+
+## Tela de Configurações
+- [x] Criar tela de configurações
+- [x] Adicionar seletor visual de idioma
+- [x] Adicionar seletor visual de tema
+- [x] Implementar preview de cores do tema
+- [x] Adicionar navegação para tela de configurações
+
+## Telas de Detalhes dos Comandos
+- [x] Criar tela de detalhes para Escanear Rede
+- [x] Criar tela de detalhes para Decriptar Arquivos
+- [x] Criar tela de detalhes para Quebrar Firewall
+- [x] Criar tela de detalhes para Acessar Banco de Dados
+- [x] Criar tela de detalhes para Rastrear IP
+- [x] Criar tela de detalhes para Informações do Sistema
+- [x] Implementar navegação entre telas de detalhes
+
+## Melhorias no Console Output
+- [x] Limitar console output às últimas 5-10 notificações
+- [x] Remover histórico completo de comandos
+- [x] Mostrar apenas alterações recentes
