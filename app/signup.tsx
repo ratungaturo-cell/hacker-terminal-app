@@ -4,36 +4,49 @@ import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { HackerInput } from "@/components/hacker-input";
 import { NeonButton } from "@/components/neon-button";
-import { loginUser } from "@/lib/auth-service";
+import { registerUser } from "@/lib/auth-service";
 
-export default function LoginScreen() {
+export default function SignUpScreen() {
   const router = useRouter();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleLogin = async () => {
+  const handleSignUp = async () => {
     setError("");
+    setSuccess("");
 
-    if (!username || !password) {
-      setError("CREDENTIALS REQUIRED");
+    // Validate inputs
+    if (!username || !email || !password || !confirmPassword) {
+      setError("ALL FIELDS REQUIRED");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("PASSWORDS DO NOT MATCH");
       return;
     }
 
     setLoading(true);
 
-    // Simulate authentication delay
+    // Simulate registration delay
     setTimeout(async () => {
-      const result = await loginUser(username, password);
+      const result = await registerUser(username, email, password);
 
       if (result.success) {
-        setLoading(false);
-        router.replace("/(tabs)");
+        setSuccess("ACCOUNT CREATED SUCCESSFULLY");
+        setTimeout(() => {
+          router.replace("/login");
+        }, 1500);
       } else {
-        setError(result.message || "LOGIN FAILED");
-        setLoading(false);
+        setError(result.message || "REGISTRATION FAILED");
       }
+
+      setLoading(false);
     }, 1500);
   };
 
@@ -49,40 +62,51 @@ export default function LoginScreen() {
         >
           <View className="flex-1 justify-center px-6 py-8">
             {/* Logo */}
-            <View className="items-center mb-12">
+            <View className="items-center mb-8">
               <Image
                 source={require("@/assets/images/icon.png")}
-                style={{ width: 120, height: 120 }}
+                style={{ width: 100, height: 100 }}
                 resizeMode="contain"
               />
             </View>
 
             {/* Title */}
-            <View className="items-center mb-8">
+            <View className="items-center mb-6">
               <Text
-                className="text-3xl font-bold text-primary mb-2"
+                className="text-2xl font-bold text-primary mb-2"
                 style={{
                   fontFamily: 'monospace',
                   textShadowColor: '#00ff41',
                   textShadowRadius: 20,
                 }}
               >
-                HACKER TERMINAL
+                CREATE ACCOUNT
               </Text>
-              <Text className="text-muted text-sm font-mono" style={{ fontFamily: 'monospace' }}>
-                v1.0.0 - SECURE ACCESS REQUIRED
+              <Text className="text-muted text-xs font-mono" style={{ fontFamily: 'monospace' }}>
+                JOIN THE NETWORK
               </Text>
             </View>
 
-            {/* Login Form */}
-            <View className="gap-4 mb-6">
+            {/* Registration Form */}
+            <View className="gap-3 mb-4">
               <HackerInput
-                prefix="root@"
+                prefix="user:"
                 placeholder="username"
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
                 autoCorrect={false}
+                editable={!loading}
+              />
+
+              <HackerInput
+                prefix="mail:"
+                placeholder="email@domain.com"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
                 editable={!loading}
               />
 
@@ -95,8 +119,19 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loading}
+              />
+
+              <HackerInput
+                prefix="conf:"
+                placeholder="confirm password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!loading}
                 returnKeyType="done"
-                onSubmitEditing={handleLogin}
+                onSubmitEditing={handleSignUp}
               />
             </View>
 
@@ -116,21 +151,37 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
-            {/* Login Button */}
+            {/* Success Message */}
+            {success ? (
+              <View className="mb-4 border border-success/50 bg-success/10 rounded-lg p-3">
+                <Text
+                  className="text-success text-center font-mono text-sm"
+                  style={{
+                    fontFamily: 'monospace',
+                    textShadowColor: '#00ff41',
+                    textShadowRadius: 10,
+                  }}
+                >
+                  {success}
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Sign Up Button */}
             <NeonButton
-              title={loading ? "AUTHENTICATING..." : "ACCESS GRANTED"}
-              onPress={handleLogin}
+              title={loading ? "CREATING..." : "CREATE ACCOUNT"}
+              onPress={handleSignUp}
               disabled={loading}
-              className="mb-6"
+              className="mb-4"
             />
 
-            {/* Sign Up Link */}
+            {/* Login Link */}
             <View className="items-center">
               <Text className="text-muted text-sm font-mono" style={{ fontFamily: 'monospace' }}>
-                NEW TO THE NETWORK?
+                ALREADY HAVE AN ACCOUNT?
               </Text>
               <Pressable
-                onPress={() => router.replace("/signup")}
+                onPress={() => router.replace("/login")}
                 disabled={loading}
                 style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
               >
@@ -142,19 +193,9 @@ export default function LoginScreen() {
                     textShadowRadius: 8,
                   }}
                 >
-                  CREATE ACCOUNT
+                  LOGIN HERE
                 </Text>
               </Pressable>
-            </View>
-
-            {/* Footer */}
-            <View className="items-center mt-8">
-              <Text className="text-muted text-xs font-mono" style={{ fontFamily: 'monospace' }}>
-                UNAUTHORIZED ACCESS IS PROHIBITED
-              </Text>
-              <Text className="text-muted text-xs font-mono mt-1" style={{ fontFamily: 'monospace' }}>
-                ALL ACTIVITIES ARE MONITORED
-              </Text>
             </View>
           </View>
         </ScrollView>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ScrollView, Text, View, Pressable, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getCurrentUser, logoutUser } from "@/lib/auth-service";
 import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { CommandCard } from "@/components/command-card";
@@ -22,6 +22,7 @@ export default function TerminalScreen() {
   const router = useRouter();
   const colors = useColors();
   const [username, setUsername] = useState("root");
+  const [userEmail, setUserEmail] = useState("");
   const [consoleLines, setConsoleLines] = useState<string[]>([
     "> System initialized...",
     "> Welcome to Hacker Terminal v1.0.0",
@@ -123,17 +124,16 @@ export default function TerminalScreen() {
   ]);
 
   useEffect(() => {
-    checkAuth();
+    loadUserData();
   }, []);
 
-  const checkAuth = async () => {
-    const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
-    const storedUsername = await AsyncStorage.getItem("username");
-    
-    if (!isLoggedIn) {
+  const loadUserData = async () => {
+    const user = await getCurrentUser();
+    if (!user) {
       router.replace("/login");
-    } else if (storedUsername) {
-      setUsername(storedUsername);
+    } else {
+      setUsername(user.username);
+      setUserEmail(user.email);
     }
   };
 
@@ -141,8 +141,7 @@ export default function TerminalScreen() {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-    await AsyncStorage.removeItem("isLoggedIn");
-    await AsyncStorage.removeItem("username");
+    await logoutUser();
     router.replace("/login");
   };
 
@@ -194,6 +193,9 @@ export default function TerminalScreen() {
                 }}
               >
                 {username}@hacker:~$
+              </Text>
+              <Text className="text-muted text-xs font-mono mb-2" style={{ fontFamily: 'monospace' }}>
+                {userEmail}
               </Text>
               <StatusIndicator status="online" />
             </View>

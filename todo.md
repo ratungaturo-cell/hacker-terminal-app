@@ -47,3 +47,20 @@
 ## Navegação
 - [x] Configurar navegação entre login e terminal
 - [x] Implementar persistência de sessão com AsyncStorage
+
+
+## Novas Funcionalidades - Autenticação Melhorada
+- [x] Criar tela de registro (Sign Up)
+- [x] Implementar validação de email e senha
+- [x] Refatorar tela de login para usuários existentes
+- [x] Criar sistema de armazenamento de usuários com AsyncStorage
+- [x] Adicionar navegação entre login e registro
+- [x] Implementar logout com limpeza de dados
+
+## Testes e Correção de Bugs
+- [x] Testar fluxo de registro
+- [x] Testar fluxo de login
+- [x] Validar execução de todos os comandos
+- [x] Corrigir bugs de conexão dos comandos
+- [x] Testar persistência de sessão
+- [x] Validar feedback visual de comandos

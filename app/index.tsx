@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isUserLoggedIn } from "@/lib/auth-service";
 import { View, ActivityIndicator } from "react-native";
 
 export default function Index() {
@@ -12,14 +12,15 @@ export default function Index() {
 
   const checkAuth = async () => {
     try {
-      const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
-      
-      if (isLoggedIn === "true") {
+      const loggedIn = await isUserLoggedIn();
+
+      if (loggedIn) {
         router.replace("/(tabs)");
       } else {
         router.replace("/login");
       }
     } catch (error) {
+      console.error("Auth check error:", error);
       router.replace("/login");
     }
   };
