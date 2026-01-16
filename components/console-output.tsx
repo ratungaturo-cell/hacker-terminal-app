@@ -34,21 +34,26 @@ export function ConsoleOutput({ lines }: ConsoleOutputProps) {
             {'> '}_
           </Text>
         ) : (
-          lines.map((line, index) => (
-            <Text
-              key={index}
-              className="text-primary text-sm font-mono mb-1"
-              style={{
-                fontFamily: 'monospace',
-                color: line.startsWith('[ERROR]') ? colors.error : 
-                       line.startsWith('[SUCCESS]') ? colors.success :
-                       line.startsWith('[WARNING]') ? colors.warning :
-                       colors.primary,
-              }}
-            >
-              {line}
-            </Text>
-          ))
+          lines.map((line, index) => {
+            // Validar se line é uma string antes de usar startsWith
+            const lineStr = typeof line === 'string' ? line : String(line || '');
+            
+            return (
+              <Text
+                key={index}
+                className="text-primary text-sm font-mono mb-1"
+                style={{
+                  fontFamily: 'monospace',
+                  color: lineStr.startsWith('[ERROR]') ? colors.error : 
+                         lineStr.startsWith('[SUCCESS]') ? colors.success :
+                         lineStr.startsWith('[WARNING]') ? colors.warning :
+                         colors.primary,
+                }}
+              >
+                {lineStr}
+              </Text>
+            );
+          })
         )}
       </ScrollView>
     </View>

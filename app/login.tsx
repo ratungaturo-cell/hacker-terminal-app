@@ -5,9 +5,13 @@ import { ScreenContainer } from "@/components/screen-container";
 import { HackerInput } from "@/components/hacker-input";
 import { NeonButton } from "@/components/neon-button";
 import { loginUser } from "@/lib/auth-service";
+import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,13 +21,12 @@ export default function LoginScreen() {
     setError("");
 
     if (!username || !password) {
-      setError("CREDENTIALS REQUIRED");
+      setError(t.login.credentialsRequired);
       return;
     }
 
     setLoading(true);
 
-    // Simulate authentication delay
     setTimeout(async () => {
       const result = await loginUser(username, password);
 
@@ -31,7 +34,7 @@ export default function LoginScreen() {
         setLoading(false);
         router.replace("/(tabs)");
       } else {
-        setError(result.message || "LOGIN FAILED");
+        setError(result.message || t.login.invalidCredentials);
         setLoading(false);
       }
     }, 1500);
@@ -60,17 +63,18 @@ export default function LoginScreen() {
             {/* Title */}
             <View className="items-center mb-8">
               <Text
-                className="text-3xl font-bold text-primary mb-2"
+                className="text-3xl font-bold mb-2"
                 style={{
                   fontFamily: 'monospace',
-                  textShadowColor: '#00ff41',
+                  color: theme.primary,
+                  textShadowColor: theme.primary,
                   textShadowRadius: 20,
                 }}
               >
-                HACKER TERMINAL
+                {t.login.title}
               </Text>
-              <Text className="text-muted text-sm font-mono" style={{ fontFamily: 'monospace' }}>
-                v1.0.0 - SECURE ACCESS REQUIRED
+              <Text className="text-sm font-mono" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.login.subtitle}
               </Text>
             </View>
 
@@ -78,7 +82,7 @@ export default function LoginScreen() {
             <View className="gap-4 mb-6">
               <HackerInput
                 prefix="root@"
-                placeholder="username"
+                placeholder={t.login.username}
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
@@ -88,7 +92,7 @@ export default function LoginScreen() {
 
               <HackerInput
                 prefix="pass:"
-                placeholder="password"
+                placeholder={t.login.password}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -102,12 +106,13 @@ export default function LoginScreen() {
 
             {/* Error Message */}
             {error ? (
-              <View className="mb-4 border border-error/50 bg-error/10 rounded-lg p-3">
+              <View className="mb-4 border rounded-lg p-3" style={{ borderColor: `${theme.error}80`, backgroundColor: `${theme.error}20` }}>
                 <Text
-                  className="text-error text-center font-mono text-sm"
+                  className="text-center font-mono text-sm"
                   style={{
                     fontFamily: 'monospace',
-                    textShadowColor: '#ff0055',
+                    color: theme.error,
+                    textShadowColor: theme.error,
                     textShadowRadius: 10,
                   }}
                 >
@@ -118,7 +123,7 @@ export default function LoginScreen() {
 
             {/* Login Button */}
             <NeonButton
-              title={loading ? "AUTHENTICATING..." : "ACCESS GRANTED"}
+              title={loading ? t.login.authenticating : t.login.button}
               onPress={handleLogin}
               disabled={loading}
               className="mb-6"
@@ -126,8 +131,8 @@ export default function LoginScreen() {
 
             {/* Sign Up Link */}
             <View className="items-center">
-              <Text className="text-muted text-sm font-mono" style={{ fontFamily: 'monospace' }}>
-                NEW TO THE NETWORK?
+              <Text className="text-sm font-mono" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.login.newToNetwork}
               </Text>
               <Pressable
                 onPress={() => router.replace("/signup")}
@@ -135,25 +140,26 @@ export default function LoginScreen() {
                 style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
               >
                 <Text
-                  className="text-primary text-sm font-mono font-bold mt-2"
+                  className="text-sm font-mono font-bold mt-2"
                   style={{
                     fontFamily: 'monospace',
-                    textShadowColor: '#00ff41',
+                    color: theme.primary,
+                    textShadowColor: theme.primary,
                     textShadowRadius: 8,
                   }}
                 >
-                  CREATE ACCOUNT
+                  {t.login.createAccount}
                 </Text>
               </Pressable>
             </View>
 
             {/* Footer */}
             <View className="items-center mt-8">
-              <Text className="text-muted text-xs font-mono" style={{ fontFamily: 'monospace' }}>
-                UNAUTHORIZED ACCESS IS PROHIBITED
+              <Text className="text-xs font-mono" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.login.unauthorized}
               </Text>
-              <Text className="text-muted text-xs font-mono mt-1" style={{ fontFamily: 'monospace' }}>
-                ALL ACTIVITIES ARE MONITORED
+              <Text className="text-xs font-mono mt-1" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.login.monitored}
               </Text>
             </View>
           </View>

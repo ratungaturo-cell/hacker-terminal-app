@@ -8,6 +8,8 @@ import { CommandCard } from "@/components/command-card";
 import { ConsoleOutput } from "@/components/console-output";
 import { StatusIndicator } from "@/components/status-indicator";
 import { useColors } from "@/hooks/use-colors";
+import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
 
 interface Command {
   id: string;
@@ -21,104 +23,106 @@ interface Command {
 export default function TerminalScreen() {
   const router = useRouter();
   const colors = useColors();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const [username, setUsername] = useState("root");
   const [userEmail, setUserEmail] = useState("");
   const [consoleLines, setConsoleLines] = useState<string[]>([
-    "> System initialized...",
-    "> Welcome to Hacker Terminal v1.0.0",
-    "> Type a command to begin",
+    t.terminal.systemInitialized,
+    t.terminal.welcome,
+    t.terminal.typeCommand,
   ]);
   const [commands, setCommands] = useState<Command[]>([
     {
       id: "scan",
       icon: "📡",
-      title: "SCAN NETWORK",
-      description: "Discover devices on local network",
+      title: t.terminal.commands.scan.title,
+      description: t.terminal.commands.scan.description,
       status: "ready",
       output: [
-        "> Initializing network scan...",
-        "> Scanning subnet 192.168.1.0/24",
-        "> Found device: 192.168.1.1 (Router)",
-        "> Found device: 192.168.1.105 (Phone)",
-        "> Found device: 192.168.1.142 (Laptop)",
-        "[SUCCESS] Scan complete - 3 devices found",
+        "> Inicializando scan de rede...",
+        "> Escaneando subnet 192.168.1.0/24",
+        "> Dispositivo encontrado: 192.168.1.1 (Roteador)",
+        "> Dispositivo encontrado: 192.168.1.105 (Telefone)",
+        "> Dispositivo encontrado: 192.168.1.142 (Notebook)",
+        "[SUCCESS] Scan completo - 3 dispositivos encontrados",
       ],
     },
     {
       id: "decrypt",
       icon: "🔓",
-      title: "DECRYPT FILES",
-      description: "Decrypt encrypted data files",
+      title: t.terminal.commands.decrypt.title,
+      description: t.terminal.commands.decrypt.description,
       status: "ready",
       output: [
-        "> Loading encrypted files...",
-        "> Attempting decryption with AES-256",
-        "> Progress: 25%",
-        "> Progress: 50%",
-        "> Progress: 75%",
-        "> Progress: 100%",
-        "[SUCCESS] Files decrypted successfully",
+        "> Carregando arquivos criptografados...",
+        "> Tentando decriptação com AES-256",
+        "> Progresso: 25%",
+        "> Progresso: 50%",
+        "> Progresso: 75%",
+        "> Progresso: 100%",
+        "[SUCCESS] Arquivos decriptados com sucesso",
       ],
     },
     {
       id: "firewall",
       icon: "🛡️",
-      title: "BREACH FIREWALL",
-      description: "Penetrate security firewall",
+      title: t.terminal.commands.firewall.title,
+      description: t.terminal.commands.firewall.description,
       status: "ready",
       output: [
-        "> Analyzing firewall configuration...",
-        "> Searching for vulnerabilities...",
-        "> Exploit found: CVE-2024-1337",
-        "> Injecting payload...",
-        "> Bypassing authentication...",
-        "[SUCCESS] Firewall breached",
+        "> Analisando configuração do firewall...",
+        "> Procurando por vulnerabilidades...",
+        "> Exploit encontrado: CVE-2024-1337",
+        "> Injetando payload...",
+        "> Contornando autenticação...",
+        "[SUCCESS] Firewall quebrado",
       ],
     },
     {
       id: "database",
       icon: "💾",
-      title: "ACCESS DATABASE",
-      description: "Query remote database",
+      title: t.terminal.commands.database.title,
+      description: t.terminal.commands.database.description,
       status: "ready",
       output: [
-        "> Connecting to database server...",
+        "> Conectando ao servidor de banco de dados...",
         "> SELECT * FROM users WHERE admin=1",
-        "> ID: 1 | User: admin | Level: 10",
-        "> ID: 7 | User: sysadmin | Level: 9",
-        "> ID: 23 | User: root | Level: 10",
-        "[SUCCESS] Query executed - 3 results",
+        "> ID: 1 | Usuário: admin | Nível: 10",
+        "> ID: 7 | Usuário: sysadmin | Nível: 9",
+        "> ID: 23 | Usuário: root | Nível: 10",
+        "[SUCCESS] Consulta executada - 3 resultados",
       ],
     },
     {
       id: "trace",
       icon: "🌍",
-      title: "TRACE IP",
-      description: "Geolocate IP address",
+      title: t.terminal.commands.trace.title,
+      description: t.terminal.commands.trace.description,
       status: "ready",
       output: [
-        "> Tracing IP: 203.0.113.42",
-        "> Resolving geolocation...",
-        "> Country: United States",
-        "> City: San Francisco, CA",
+        "> Rastreando IP: 203.0.113.42",
+        "> Resolvendo geolocalização...",
+        "> País: Brasil",
+        "> Cidade: São Paulo, SP",
         "> ISP: CloudNet Systems",
-        "[SUCCESS] Trace complete",
+        "[SUCCESS] Rastreamento completo",
       ],
     },
     {
       id: "sysinfo",
       icon: "⚙️",
-      title: "SYSTEM INFO",
-      description: "Display system information",
+      title: t.terminal.commands.sysinfo.title,
+      description: t.terminal.commands.sysinfo.description,
       status: "ready",
       output: [
-        "> Gathering system information...",
-        `> OS: ${Platform.OS}`,
-        `> Platform: ${Platform.Version}`,
-        "> CPU: 8 cores @ 2.4GHz",
+        "> Coletando informações do sistema...",
+        `> SO: ${Platform.OS}`,
+        `> Plataforma: ${Platform.Version}`,
+        "> CPU: 8 núcleos @ 2.4GHz",
         "> RAM: 8GB",
-        "> Storage: 256GB SSD",
-        "[SUCCESS] System info retrieved",
+        "> Armazenamento: 256GB SSD",
+        "[SUCCESS] Informações do sistema recuperadas",
       ],
     },
   ]);
@@ -149,25 +153,25 @@ export default function TerminalScreen() {
     const command = commands.find((cmd) => cmd.id === commandId);
     if (!command || command.status === "running") return;
 
-    // Update command status to running
     setCommands((prev) =>
       prev.map((cmd) =>
         cmd.id === commandId ? { ...cmd, status: "running" } : cmd
       )
     );
 
-    // Add initial console output
-    setConsoleLines((prev) => [...prev, `> Executing ${command.title}...`]);
+    setConsoleLines((prev) => [...prev, `${t.terminal.executing} ${command.title}...`]);
 
-    // Simulate command execution with progressive output
     let lineIndex = 0;
     const interval = setInterval(() => {
       if (lineIndex < command.output.length) {
-        setConsoleLines((prev) => [...prev, command.output[lineIndex]]);
+        const line = command.output[lineIndex];
+        // Garantir que line é uma string válida antes de adicionar
+        if (typeof line === 'string' && line.length > 0) {
+          setConsoleLines((prev) => [...prev, line]);
+        }
         lineIndex++;
       } else {
         clearInterval(interval);
-        // Mark command as complete
         setCommands((prev) =>
           prev.map((cmd) =>
             cmd.id === commandId ? { ...cmd, status: "complete" } : cmd
@@ -182,37 +186,41 @@ export default function TerminalScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 p-4">
           {/* Header */}
-          <View className="flex-row items-center justify-between mb-6 pb-4 border-b border-primary/30">
+          <View className="flex-row items-center justify-between mb-6 pb-4" style={{ borderBottomColor: `${theme.primary}50`, borderBottomWidth: 1 }}>
             <View>
               <Text
-                className="text-xl font-bold text-primary mb-1"
+                className="text-xl font-bold mb-1"
                 style={{
                   fontFamily: 'monospace',
-                  textShadowColor: colors.primary,
+                  color: theme.primary,
+                  textShadowColor: theme.primary,
                   textShadowRadius: 10,
                 }}
               >
                 {username}@hacker:~$
               </Text>
-              <Text className="text-muted text-xs font-mono mb-2" style={{ fontFamily: 'monospace' }}>
+              <Text className="text-xs font-mono mb-2" style={{ fontFamily: 'monospace', color: theme.muted }}>
                 {userEmail}
               </Text>
               <StatusIndicator status="online" />
             </View>
             <Pressable
               onPress={handleLogout}
-              style={({ pressed }) => [
-                {
-                  opacity: pressed ? 0.7 : 1,
-                },
-              ]}
-              className="border border-error/50 bg-error/10 rounded-lg px-4 py-2"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+                borderColor: theme.error + '80',
+                backgroundColor: theme.error + '20',
+                borderWidth: 1,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+              })}
             >
               <Text
-                className="text-error text-sm font-mono font-bold"
-                style={{ fontFamily: 'monospace' }}
+                className="text-sm font-mono font-bold"
+                style={{ fontFamily: 'monospace', color: theme.error }}
               >
-                LOGOUT
+                {t.terminal.logout}
               </Text>
             </Pressable>
           </View>
@@ -220,14 +228,15 @@ export default function TerminalScreen() {
           {/* Commands Section */}
           <View className="mb-6">
             <Text
-              className="text-primary text-lg font-bold font-mono mb-4"
+              className="text-lg font-bold font-mono mb-4"
               style={{
                 fontFamily: 'monospace',
-                textShadowColor: colors.primary,
+                color: theme.primary,
+                textShadowColor: theme.primary,
                 textShadowRadius: 8,
               }}
             >
-              AVAILABLE COMMANDS
+              {t.terminal.availableCommands}
             </Text>
             {commands.map((command) => (
               <CommandCard
@@ -244,14 +253,15 @@ export default function TerminalScreen() {
           {/* Console Output */}
           <View className="mb-6">
             <Text
-              className="text-primary text-lg font-bold font-mono mb-4"
+              className="text-lg font-bold font-mono mb-4"
               style={{
                 fontFamily: 'monospace',
-                textShadowColor: colors.primary,
+                color: theme.primary,
+                textShadowColor: theme.primary,
                 textShadowRadius: 8,
               }}
             >
-              CONSOLE OUTPUT
+              {t.terminal.consoleOutput}
             </Text>
             <ConsoleOutput lines={consoleLines} />
           </View>

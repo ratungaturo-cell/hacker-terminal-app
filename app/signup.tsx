@@ -5,9 +5,13 @@ import { ScreenContainer } from "@/components/screen-container";
 import { HackerInput } from "@/components/hacker-input";
 import { NeonButton } from "@/components/neon-button";
 import { registerUser } from "@/lib/auth-service";
+import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,30 +24,28 @@ export default function SignUpScreen() {
     setError("");
     setSuccess("");
 
-    // Validate inputs
     if (!username || !email || !password || !confirmPassword) {
-      setError("ALL FIELDS REQUIRED");
+      setError(t.signup.allFieldsRequired);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("PASSWORDS DO NOT MATCH");
+      setError(t.signup.passwordsMismatch);
       return;
     }
 
     setLoading(true);
 
-    // Simulate registration delay
     setTimeout(async () => {
       const result = await registerUser(username, email, password);
 
       if (result.success) {
-        setSuccess("ACCOUNT CREATED SUCCESSFULLY");
+        setSuccess(t.signup.accountCreated);
         setTimeout(() => {
           router.replace("/login");
         }, 1500);
       } else {
-        setError(result.message || "REGISTRATION FAILED");
+        setError(result.message || "Registration failed");
       }
 
       setLoading(false);
@@ -73,17 +75,18 @@ export default function SignUpScreen() {
             {/* Title */}
             <View className="items-center mb-6">
               <Text
-                className="text-2xl font-bold text-primary mb-2"
+                className="text-2xl font-bold mb-2"
                 style={{
                   fontFamily: 'monospace',
-                  textShadowColor: '#00ff41',
+                  color: theme.primary,
+                  textShadowColor: theme.primary,
                   textShadowRadius: 20,
                 }}
               >
-                CREATE ACCOUNT
+                {t.signup.title}
               </Text>
-              <Text className="text-muted text-xs font-mono" style={{ fontFamily: 'monospace' }}>
-                JOIN THE NETWORK
+              <Text className="text-xs font-mono" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.signup.subtitle}
               </Text>
             </View>
 
@@ -91,7 +94,7 @@ export default function SignUpScreen() {
             <View className="gap-3 mb-4">
               <HackerInput
                 prefix="user:"
-                placeholder="username"
+                placeholder={t.signup.username}
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
@@ -101,7 +104,7 @@ export default function SignUpScreen() {
 
               <HackerInput
                 prefix="mail:"
-                placeholder="email@domain.com"
+                placeholder={t.signup.email}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -112,7 +115,7 @@ export default function SignUpScreen() {
 
               <HackerInput
                 prefix="pass:"
-                placeholder="password"
+                placeholder={t.signup.password}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -123,7 +126,7 @@ export default function SignUpScreen() {
 
               <HackerInput
                 prefix="conf:"
-                placeholder="confirm password"
+                placeholder={t.signup.confirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry
@@ -137,12 +140,13 @@ export default function SignUpScreen() {
 
             {/* Error Message */}
             {error ? (
-              <View className="mb-4 border border-error/50 bg-error/10 rounded-lg p-3">
+              <View className="mb-4 border rounded-lg p-3" style={{ borderColor: `${theme.error}80`, backgroundColor: `${theme.error}20` }}>
                 <Text
-                  className="text-error text-center font-mono text-sm"
+                  className="text-center font-mono text-sm"
                   style={{
                     fontFamily: 'monospace',
-                    textShadowColor: '#ff0055',
+                    color: theme.error,
+                    textShadowColor: theme.error,
                     textShadowRadius: 10,
                   }}
                 >
@@ -153,12 +157,13 @@ export default function SignUpScreen() {
 
             {/* Success Message */}
             {success ? (
-              <View className="mb-4 border border-success/50 bg-success/10 rounded-lg p-3">
+              <View className="mb-4 border rounded-lg p-3" style={{ borderColor: `${theme.success}80`, backgroundColor: `${theme.success}20` }}>
                 <Text
-                  className="text-success text-center font-mono text-sm"
+                  className="text-center font-mono text-sm"
                   style={{
                     fontFamily: 'monospace',
-                    textShadowColor: '#00ff41',
+                    color: theme.success,
+                    textShadowColor: theme.success,
                     textShadowRadius: 10,
                   }}
                 >
@@ -169,7 +174,7 @@ export default function SignUpScreen() {
 
             {/* Sign Up Button */}
             <NeonButton
-              title={loading ? "CREATING..." : "CREATE ACCOUNT"}
+              title={loading ? t.signup.creating : t.signup.button}
               onPress={handleSignUp}
               disabled={loading}
               className="mb-4"
@@ -177,8 +182,8 @@ export default function SignUpScreen() {
 
             {/* Login Link */}
             <View className="items-center">
-              <Text className="text-muted text-sm font-mono" style={{ fontFamily: 'monospace' }}>
-                ALREADY HAVE AN ACCOUNT?
+              <Text className="text-sm font-mono" style={{ fontFamily: 'monospace', color: theme.muted }}>
+                {t.signup.alreadyHaveAccount}
               </Text>
               <Pressable
                 onPress={() => router.replace("/login")}
@@ -186,14 +191,15 @@ export default function SignUpScreen() {
                 style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
               >
                 <Text
-                  className="text-primary text-sm font-mono font-bold mt-2"
+                  className="text-sm font-mono font-bold mt-2"
                   style={{
                     fontFamily: 'monospace',
-                    textShadowColor: '#00ff41',
+                    color: theme.primary,
+                    textShadowColor: theme.primary,
                     textShadowRadius: 8,
                   }}
                 >
-                  LOGIN HERE
+                  {t.signup.loginHere}
                 </Text>
               </Pressable>
             </View>

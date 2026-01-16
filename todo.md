@@ -64,3 +64,28 @@
 - [x] Corrigir bugs de conexão dos comandos
 - [x] Testar persistência de sessão
 - [x] Validar feedback visual de comandos
+
+
+## Correção de Bugs
+- [x] Corrigir erro "cannot read property 'startswith' of undefined" no console output
+- [x] Validar execução de todos os comandos sem erros
+
+## Internacionalização (i18n)
+- [x] Criar sistema de tradução com suporte a múltiplos idiomas
+- [x] Adicionar português como idioma padrão
+- [x] Adicionar inglês e espanhol como opções
+- [ ] Criar tela de seleção de idioma
+- [x] Salvar preferência de idioma no AsyncStorage
+
+## Temas Personalizados
+- [x] Implementar sistema de temas (Verde neon, Ciano, Roxo, Vermelho)
+- [ ] Criar tela de seleção de tema
+- [x] Salvar preferência de tema no AsyncStorage
+- [x] Aplicar tema em todos os componentes
+
+## Tradução da Interface
+- [x] Traduzir tela de login
+- [x] Traduzir tela de registro
+- [x] Traduzir tela principal do terminal
+- [x] Traduzir nomes dos comandos
+- [x] Traduzir mensagens de erro e sucesso
